@@ -1,32 +1,27 @@
-// import 'dart:convert';
-// import 'dart:io';
-// import 'package:challenges_bt/api/object.dart';
-// import 'package:http/http.dart' as http;
-//
-// Future<List<JsonObject>> getRequest(String url) async {
-//   // Header - Authorization
-//   String authorizationHeader = '3b17176f2eb5fdffb9bafdcc3e4bc192b013813caddccd0aad20c23ed272f076_1423639497';
-//
-//   final response = await http.get(
-//     Uri.parse(url),
-//     headers: {
-//       HttpHeaders.authorizationHeader: authorizationHeader,
-//     },
-//   );
-//
-//   if (response.statusCode == HttpStatus.ok) {
-//     var jsonList = jsonDecode(response.body);
-//     final jsonListData = jsonList['data'] as List;
-//
-//     final items = jsonListData.cast<Map<String, dynamic>>();
-//
-//     // Transforming to List
-//     List<JsonObject> allInfo = items.map<JsonObject>((json) {
-//       return JsonObject.fromJson(json);
-//     }).toList();
-//
-//     return allInfo;
-//   } else {
-//     throw Exception('Failed to load album');
-//   }
-// }
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+const apiUrl = 'https://api.openai.com/v1/completions';
+
+Future<String> generateText(String apiKey, String prompt) async {
+  final response = await http.post(
+    Uri.parse(apiUrl),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $apiKey'
+    },
+    body: jsonEncode({
+      "model": "text-davinci-003",
+      'prompt': prompt,
+      'max_tokens': 1000,
+      'temperature': 0,
+      'top_p': 1,
+      'frequency_penalty': 0,
+      'presence_penalty': 0
+    }),
+  );
+
+  Map<String, dynamic> res = jsonDecode(utf8.decode(response.bodyBytes));
+
+  return res['choices'][0]['text'];
+}

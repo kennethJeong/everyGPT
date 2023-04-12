@@ -11,7 +11,9 @@ void main() async {
 
   runApp(
     ProviderScope(
-      child: GPT(),
+      child: MaterialApp(
+        home: GPT(),
+      ),
     ),
   );
 }
@@ -19,12 +21,28 @@ void main() async {
 class GPT extends HookConsumerWidget {
   GPT({super.key});
 
+  final TextEditingController _controller = TextEditingController();
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return MaterialApp(
-      home: Scaffold(
-        // appBar: AppBar(title: const Text('Example')),
-        body: Init(),
+    return Scaffold(
+      appBar: AppBar(title: const Text('ChatGPT')),
+      // body: Init(),
+      body: Column(
+        children: [
+          TextField(
+            controller: _controller,
+          ),
+          TextButton(
+            onPressed: () {
+              String prompt = _controller.text;
+              Navigator.push(context, MaterialPageRoute(
+                builder: (context) => Init(prompt))
+              );
+            },
+            child: const Text("Get Result"),
+          )
+        ],
       ),
     );
   }
